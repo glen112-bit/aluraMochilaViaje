@@ -13,7 +13,6 @@ form.addEventListener('submit', (e) => {
   const quantity = e.target.elements['quantidade'];
 
   const existe = items.find((e) => e.name === name.value);
-  // console.log(existe)
 
   const itemActual = {
    'name': name.value,
@@ -22,17 +21,22 @@ form.addEventListener('submit', (e) => {
 
   if(existe){
     itemActual.id = existe.id
-    // console.log(existe)
+
     actualizaElemento(itemActual)
+
+    items[items.findIndex(elemento => elemento.id === existe.id)] = itemActual
   }else{
-    itemActual.id = items.length;
+
+    itemActual.id = items[items.length - 1] ? (items[items.length - 1]).id + 1 : 0;
+
     creaElemento(itemActual)
+
     items.push(itemActual)
 
   }
 
   localStorage.setItem('items', JSON.stringify(items));
-
+  // actualizaLocal(itemActual)
   name.value = "";
   quantity.value = "";  
 
@@ -46,13 +50,27 @@ function creaElemento(item){
   cuantosItem.dataset.id = item.id;
   newLi.appendChild(cuantosItem);
   newLi.innerHTML += item.name;
+  newLi.appendChild(deleteButton(item.id))
   lista.appendChild(newLi);
 
  }
 
 
-function actualizaElemento(items){
+function actualizaElemento(items ){
   document.querySelector("[data-id='"+items.id+"']").innerHTML = items.quantity
-
 }
 
+function deleteButton(id){
+  const buttonElement = document.createElement("button");
+  buttonElement.innerText = "X";
+  buttonElement.addEventListener('click', function(){
+    deleteElement(this.parentNode, id)
+  })
+  return buttonElement;
+}
+function deleteElement(tag, id ){
+  console.log(id, items)
+  tag.remove()
+  items.splice(items.findIndex(e => e.id === id), 1)
+  localStorage.setItem('items', JSON.stringify(items))
+}
